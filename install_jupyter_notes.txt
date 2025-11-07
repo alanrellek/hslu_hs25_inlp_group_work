@@ -1,2 +1,2 @@
-pip install notebook
-jupyter notebook
+pip install notebook # Install minimum Jupyter version
+jupyter notebook # Launch local Web-GUI
