@@ -1,2 +1,7 @@
 pip install notebook # Install minimum Jupyter version
 jupyter notebook # Launch local Web-GUI
+
+ # Install lib for stance classifier solution
+pip install -q scikit-learn
+pip install -q transformers
+pip install -q -U "transformers>=4.46.3" "huggingface_hub>=0.25.2" "datasets>=2.19" "scikit-learn>=1.3" "torch>=2.2

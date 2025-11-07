@@ -1,36 +1,65 @@
-# INLP Group Work – Options and Implementation Guide
+# INLP Group Work — Options and Implementation Guide
 
-This README documents three simple project options, each aligned with the GW notebook brief. For each option you’ll find a short description and suggested implementation code you can paste into `GW.ipynb` under a section named `## Implementation`.
+Description of three simple project options that align with the GW notebook brief. Each option includes a short description and paste‑ready code for the `## Implementation` section of your notebook.
+
+## Table of Contents
+- Overview
+- Requirements
+- Options
+  - Option 1: Emotion Detector
+  - Option 2: Sentiment Analyzer
+  - Option 3: Stance Classifier(s)
+- Implementation
+  - Reusable helpers
+  - Per‑option snippets
 
 ## Overview
-- Datasets: We use the Hugging Face `tweet_eval` collection with task subsets:
-  - emotion, hate, irony, offensive, sentiment, stance_abortion, stance_atheism, stance_climate, stance_feminist (a.k.a. stance_feminism), stance_hillary.
+- Datasets: Uses Hugging Face `tweet_eval` subsets:
+  - `emotion`, `hate`, `irony`, `offensive`, `sentiment`, `stance_abortion`, `stance_atheism`, `stance_climate`, `stance_feminist` (a.k.a. `stance_feminism`), `stance_hillary`.
 - Approach per option:
-  - Baseline: TF–IDF + Logistic Regression (fast, interpretable).
-  - Improved: DistilBERT fine‑tuning using `transformers` Trainer (compact, strong baseline).
-  - Evaluation: Accuracy and macro‑F1; confusion matrix and a brief error look.
+  - Baseline: TF‑IDF + Logistic Regression (fast, interpretable)
+  - Improved: DistilBERT fine‑tuning via `transformers` Trainer (compact, strong baseline)
+  - Evaluation: Accuracy and macro‑F1, confusion matrix, brief error review
 
 ## Requirements
-Install these into the same environment as your Jupyter kernel:
+Install into the same environment as your Jupyter kernel:
 
 ```
 python -m pip install -U datasets scikit-learn transformers torch ipywidgets
 ```
 
-Optional (widgets in classic Notebook only):
+Classic Notebook widgets (only if using classic, not JupyterLab ≥3/VS Code):
 
 ```
 jupyter nbextension enable --py widgetsnbextension
 ```
 
+Widget rendering tips and troubleshooting: see `install_jupyter_notes.txt:1`.
+
 ## Options
-- Option 1 – Emotion Detector: Classify short texts into emotion categories with a tiny interactive demo.
-- Option 2 – Sentiment Analyzer: Classify texts into negative/neutral/positive; optionally surface key n‑grams.
-- Option 3 – Stance Classifier(s): Predict stance (favor/against/neutral) on specific topics and compare topics.
+- Option 1 — Emotion Detector
+  - Classify short texts into emotions; include a minimal interactive demo.
+  - Dataset: `emotion` (4 classes)
+  - Pipeline: TF‑IDF + Logistic Regression, then DistilBERT fine‑tune
+  - Metrics: Accuracy, macro‑F1, confusion matrix + brief error analysis
+
+- Option 2 — Sentiment Analyzer
+  - Classify text as negative/neutral/positive; optionally surface key phrases.
+  - Dataset: `sentiment` (3 classes)
+  - Pipeline: TF‑IDF + Linear SVM/LogReg, then DistilBERT fine‑tune
+  - Metrics: Macro‑F1, class report, confusion matrix (optional calibration)
+
+- Option 3 — Stance Classifier(s)
+  - Predict stance (favor/against/neutral) on specific topics; compare topics.
+  - Datasets: e.g., `stance_climate`, `stance_hillary` (and `stance_feminist`)
+  - Pipeline: Reusable loop per dataset; TF‑IDF baseline + DistilBERT fine‑tune
+  - Metrics: Per‑topic macro‑F1, confusion matrices; optional cross‑topic test
+
+Across options, use this flow: setup/imports → data load/splits → baseline → transformer → error analysis → short discussion. If using widgets, ensure they render as noted above.
 
 ## Implementation
 
-Below is one reusable implementation you can drop into a notebook. Then call the helpers with the subset you want for each option.
+Below is a reusable implementation you can drop into a notebook. Then call the helpers with the subset you want for each option.
 
 ```
 # --- Imports
@@ -140,7 +169,7 @@ def show_errors(y_true, y_pred, texts, label_names, k=5):
         print(f"Text: {texts[i]}\nTrue: {label_names[y_true[i]]} | Pred: {label_names[y_pred[i]]}\n---")
 ```
 
-### Option 1 – Emotion Detector
+### Option 1 — Emotion Detector
 - Subset: `emotion`
 - Goal: Classify tweet emotions; provide a tiny demo cell to try your own text.
 
@@ -178,7 +207,7 @@ btn.on_click(on_click)
 VBox([inp, btn, out])
 ```
 
-### Option 2 – Sentiment Analyzer
+### Option 2 — Sentiment Analyzer
 - Subset: `sentiment` (labels: negative/neutral/positive)
 
 ```
@@ -199,7 +228,7 @@ print('Val (transformer):', val_t)
 print('Test (transformer):', test_t)
 ```
 
-### Option 3 – Stance Classifier(s)
+### Option 3 — Stance Classifier(s)
 - Subsets: pick one or compare two, e.g., `stance_climate` and `stance_hillary`.
 - Note: Some environments use `stance_feminist` (instead of `stance_feminism`). The loader handles both.
 
@@ -222,3 +251,4 @@ print('B Test:', test_b)
 pred_cross = baseline_a.predict(ds_b['test']['text'])
 print('Cross-topic baseline macro-F1:', f1_score(ds_b['test']['label'], pred_cross, average='macro'))
 ```
+
